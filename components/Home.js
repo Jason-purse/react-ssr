@@ -1,6 +1,8 @@
 import {connect} from "react-redux";
-import {getHomeList} from "../client/store/home/actions";
+import {getHomeList, changeContext} from "../client/store/home/actions";
 import {Component} from "react";
+// 由于使用了 scss,那么不能简单的使用nodemon 进行打包 ...
+import style from "./Home.module.css"
 
 const React = require('react');
 const Page = require('./Page')
@@ -17,8 +19,15 @@ const Page = require('./Page')
 // }
 
 class Home extends Component {
-    componentDidMount() {
-        this.props.getHomeList()
+    // componentDidMount() {
+    //     // this.props.getHomeList()
+    //     // 通过这个属性可以判断是在服务端调用
+    //
+    // }
+    // eslint-disable-next-line no-useless-constructor
+    constructor(props) {
+        super(props);
+        console.log(style)
     }
 
     // 预加载数据，服务端调用
@@ -26,12 +35,16 @@ class Home extends Component {
         return store.dispatch(getHomeList())
     }
 
+    static setContext(store, context) {
+        return store.dispatch(changeContext(context))
+    }
+
     render() {
         const props = this.props;
         return (
             <div>
                 <hr/>
-                <div>This is home</div>
+                <div className={style.homeContainer}>This is home</div>
                 <div> {!!props.home.list.length && props.home.list.map(item => <div key={item}>{item}</div>)} </div>
                 <button onClick={() => props.getHomeList()}>click me</button>
                 <div>
@@ -48,8 +61,9 @@ const mapStateToProps = (state) => {
         home: state.home
     }
 }
-export  default connect(mapStateToProps, {
-    getHomeList
+export default connect(mapStateToProps, {
+    getHomeList,
+    changeContext
 })(Home);
 
 

@@ -1,0 +1,6 @@
+.homeContainer {
+    line-height: 40px;
+    height: 40px;
+    font: 400 24px / 40px 微软雅黑;
+    background: linear-gradient(to right, #00ffe1, #d7309a);
+}

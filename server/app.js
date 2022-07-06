@@ -13,6 +13,7 @@ app.get('/api/list', function(req, res, next) {
 })
 app.use('*', function(req, res, next){
     if(req.baseUrl === '/favicon.ico') return res.end()
+    console.log("请求路径: "+ req.baseUrl)
     render(req,res)
 })
 

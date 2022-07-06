@@ -6,13 +6,15 @@ import React from 'react'
 import {Provider} from "react-redux";
 import {getServerStore} from '../client/store'
 import {matchRoutes} from "react-router-dom";
-
+import StyleContext from 'isomorphic-style-loader/StyleContext'
 // 改造这里 服务端做数据预取
-const loadBranchData = (pathname, store) => {
+const loadBranchData = (pathname, store, context) => {
     // 使用 matchRoutes api做路由匹配
     const branch = matchRoutes(routes, pathname) || []
-
+    console.log("match route")
     const promises = branch.map(({route, match}) => {
+        // 设置上下文 ...
+        route.setContext && route.setContext(store, context)
         // 判断匹配的路由是否挂载有异步加载数据逻辑
         return route.loadData
             ? route.loadData(store, match) // 把store 和 match 传入数据预取函数
@@ -48,11 +50,12 @@ const loadBranchData = (pathname, store) => {
 //   `
 // }
 
+
 export const render = (req, res) => {
     const store = getServerStore()
     const context = {css: []};
-    loadBranchData(req.baseUrl, store).then(data => {
-        const string = getRenderString(req, store,context)
+    loadBranchData(req.baseUrl, store, context).then(data => {
+        const string = getRenderString(req, store, context)
         res.send(string);
     }).catch(error => {
         console.log(error)
@@ -61,17 +64,21 @@ export const render = (req, res) => {
 }
 
 function getRenderString(req, store, context) {
+    const css = new Set() // CSS for all rendered React components
+    const insertCss = (...styles) => styles.forEach(style => {
+        let getCss = style._getCss();
+        console.log(getCss);
+        css.add(style._getCss());
+    });
     const content = renderToString(
         // Warning 这里的 store 一定要和 loadBranchData 的store一致，因为预取的数据要在流到组件中，组件再被生成字符串返回
         // 如果这两个store不一致，将即使数据预取成功，也没有再次流到组件中
         <Provider store={store}>
-            <StaticRouter location={req.baseUrl} context={context}>
-                <Rout/>
-            </StaticRouter>
+                <StaticRouter location={req.baseUrl}>
+                    <Rout/>
+                </StaticRouter>
         </Provider>
     );
-    // 服务端的 renderToString执行完后 context中已经被注入了数据
-    const cssStr = context.css.length ? context.css.join('\n') : '';
     // 数据注水
     const hydrate = `
       window.initialState = ${JSON.stringify(store.getState())};
@@ -80,7 +87,7 @@ function getRenderString(req, store, context) {
       <html>
         <head>
           <title>ssr</title>
-          <style>${cssStr}</style>
+          <style>${[...css].join('')}</style>
         </head>
         <body>
           <div id="root">${content}</div>

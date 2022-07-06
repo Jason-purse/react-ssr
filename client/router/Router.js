@@ -23,41 +23,31 @@ import {useRoutes} from 'react-router-dom'
 
 export const routes = [
     {
-        path: "/",
-        // component: Root,
-        element: <Root />,
-        children: [
-            {
-                path: "/home",
-                exact: true,   // router v6 没有这个说法 ...
-                // component: Home,
-                element: <Home />,
-                loadData: Home.loadData,//服务端获取异步数据的函数
-            },
-            {
-                path: "/login",
-                // component: Login,
-                element: <Login/>,
-                exact: true,
-                // routes: [
-                //   {
-                //     path: "/child/:id/grand-child",
-                //     component: GrandChild
-                //   }
-                // ]
-            },
-
-            {
-                path: "/*",
-                // component: Root,
-                element: <div>这是主页</div>
-            },
-            {
-                path: "*/",
-                element: <div>nothing ....</div>
-            }
-        ]
+        path: "/home",
+        exact: true,   // router v6 没有这个说法 ...
+        // component: Home,
+        element: <Home />,
+        loadData: Home.loadData,//服务端获取异步数据的函数
+        setContext: Home.setContext
     },
+    {
+        path: "/login",
+        // component: Login,
+        element: <Login/>,
+        exact: true,
+        // routes: [
+        //   {
+        //     path: "/child/:id/grand-child",
+        //     component: GrandChild
+        //   }
+        // ]
+    },
+
+    {
+        path: "/*",
+        // component: Root,
+        element: <div>这是主页</div>
+    }
 
 ];
 
@@ -68,7 +58,7 @@ function Root() {
             <Link to="/home">home</Link> | {"   "}
             <Link to="/login">login</Link>
             <hr/>
-            {useRoutes([... routes[0].children])}
+            {useRoutes(routes)}
         </div>
     )
 }
