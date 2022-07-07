@@ -73,11 +73,13 @@ function getRenderString(req, store, context) {
     const content = renderToString(
         // Warning 这里的 store 一定要和 loadBranchData 的store一致，因为预取的数据要在流到组件中，组件再被生成字符串返回
         // 如果这两个store不一致，将即使数据预取成功，也没有再次流到组件中
-        <Provider store={store}>
+        <StyleContext.Provider value={{insertCss}}>
+            <Provider store={store}>
                 <StaticRouter location={req.baseUrl}>
                     <Rout/>
                 </StaticRouter>
-        </Provider>
+            </Provider>
+        </StyleContext.Provider>
     );
     // 数据注水
     const hydrate = `

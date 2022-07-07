@@ -4,6 +4,7 @@ import {BrowserRouter} from 'react-router-dom'
 import Rout from "./router/Router";
 import {getClientStore} from './store'
 import {Provider} from "react-redux";
+import StyleContext from 'isomorphic-style-loader/StyleContext'
 
 const insertCss = (...styles) => {
     const removeCss = styles.map(style => style._insertCss())
@@ -11,12 +12,13 @@ const insertCss = (...styles) => {
 }
 const App = () => {
     return (
-        <Provider store={getClientStore()}>
+        <StyleContext.Provider value={{insertCss}}>
+            <Provider store={getClientStore()}>
                 <BrowserRouter>
                     <Rout/>
                 </BrowserRouter>
-        </Provider>
-
+            </Provider>
+        </StyleContext.Provider>
     )
 }
 // 通过这个给 app 进行注水 ...

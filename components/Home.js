@@ -2,7 +2,9 @@ import {connect} from "react-redux";
 import {getHomeList, changeContext} from "../client/store/home/actions";
 import {Component} from "react";
 // 由于使用了 scss,那么不能简单的使用nodemon 进行打包 ...
-import style from "./Home.module.css"
+import  style from "./Home.module.css"
+import withStyles from 'isomorphic-style-loader/withStyles'
+
 
 const React = require('react');
 const Page = require('./Page')
@@ -64,6 +66,6 @@ const mapStateToProps = (state) => {
 export default connect(mapStateToProps, {
     getHomeList,
     changeContext
-})(Home);
+})(withStyles(style)(Home));
 
 

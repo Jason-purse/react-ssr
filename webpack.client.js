@@ -13,9 +13,14 @@ const clientConfig = {
         rules: [
             {
                 test: /\.css$/,
-                use: ["style-loader",{ // 注意，在服务端需要使用此loader isomorphic-style-loader
-                    loader: 'css-loader'
-                }],
+                use: ["isomorphic-style-loader",{ // 注意，在服务端需要使用此loader isomorphic-style-loader
+                    loader: 'css-loader',
+                    options: {
+                        modules: true,
+                        importLoaders: 1,
+                        esModule: false
+                    }
+                },'postcss-loader'],
             }
         ]
     }
